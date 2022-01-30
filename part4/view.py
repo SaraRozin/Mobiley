@@ -1,4 +1,8 @@
+import json
+
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('MacOSX')
 import numpy as np
 from PIL import Image
 
@@ -40,19 +44,21 @@ class Viewer:
 
 
 
-    def show_part1(self):
-        image = np.array(Image.open(image_path))
-        if json_path is None:
-            objects = None
-        else:
-            gt_data = json.load(open(json_path))
-            what = ['traffic light']
-            objects = [o for o in gt_data['objects'] if o['label'] in what]
-        self.show_image_and_gt(image, objects, fig_num)
+    # def show_part1(self):
+    #     image = np.array(Image.open(image_path))
+    #     if json_path is None:
+    #         objects = None
+    #     else:
+    #         gt_data = json.load(open(json_path))
+    #         what = ['traffic light']
+    #         objects = [o for o in gt_data['objects'] if o['label'] in what]
+    #     self.show_image_and_gt(image, objects, fig_num)
+    #
+    #     red_x, red_y, green_x, green_y = find_tfl_lights(image, some_threshold=42)
+    #     plt.plot(red_x, red_y, 'ro', markersize=4)
+    #     plt.plot(green_x, green_y, 'go', markersize=4)
 
-        red_x, red_y, green_x, green_y = find_tfl_lights(image, some_threshold=42)
-        plt.plot(red_x, red_y, 'ro', markersize=4)
-        plt.plot(green_x, green_y, 'go', markersize=4)
+
 
     ### GIVEN CODE TO TEST YOUR IMPLENTATION AND PLOT THE PICTURES
     def show_image_and_gt(image, objs, fig_num=None):

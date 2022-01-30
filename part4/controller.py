@@ -1,6 +1,7 @@
 from model import Model
 from view import Viewer
-
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Controller:
 
@@ -24,4 +25,3 @@ class Controller:
 if __name__ == '__main__':
     c = Controller()
     c.controller()
-

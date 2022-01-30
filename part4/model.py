@@ -1,10 +1,9 @@
-from tensorflow.python.keras.models import load_model
+from tensorflow.keras.models import load_model
 
 from part1.part1_api import find_tfl_lights
 from part3.SFM_standAlone import *
 import numpy as np
 from PIL import Image
-# import tensorflow as tf
 import pickle
 
 
@@ -15,23 +14,21 @@ class Model:
         self.data = data
         self.focal = data['flx']
         self.pp = data['principle_point']
-        # self.loaded_model = tf.lite.TFLiteConverter.from_keras_model("../part2/model.h5")
         self.loaded_model = load_model("../part2/model.h5")
 
     def filter_points(self, image, suspect_x, suspect_y):
         tfl_points = []
         for i in range(len(suspect_x)):
             x, y = suspect_x[i], suspect_y[i]
-            l_predictions = self.loaded_model.predict(self.crop_by_x_y(image, x, y))
-            if l_predictions > 0.5:
+            l_predictions = self.loaded_model.predict(self.crop_by_x_y(image, x, y).reshape(-1, 81, 81, 3))
+            if l_predictions[0][0] > 0.8:
                 tfl_points += [(x, y)]
         return tfl_points
 
     def get_tfl_points(self, image_path, frame_index):
-        image = np.array(Image.open(image_path))
-        x_red, y_red, x_green, y_green = find_tfl_lights(image, some_threshold=42)
+        x_red, y_red, x_green, y_green = find_tfl_lights(np.array(Image.open(image_path)), some_threshold=42)
         suspect_x, suspect_y = x_red + x_green, y_red + y_green
-        return self.filter_points(image, suspect_x, suspect_y)
+        return self.filter_points(Image.open(image_path), suspect_x, suspect_y)
 
     def crop_by_x_y(self, image, x, y):
         w, h = image.size[0] - 1, image.size[1] - 1
