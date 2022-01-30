@@ -5,11 +5,11 @@ import numpy as np
 
 def calc_TFL_dist(prev_container, curr_container, focal, pp):
     norm_prev_pts, norm_curr_pts, R, foe, tZ = prepare_3D_data(prev_container, curr_container, focal, pp)
-    if (abs(tZ) < 10e-6):
+    if abs(tZ) < 10e-6:
         print('tz = ', tZ)
-    elif (norm_prev_pts.size == 0):
+    elif norm_prev_pts.size == 0:
         print('no prev points')
-    elif (norm_prev_pts.size == 0):
+    elif norm_prev_pts.size == 0:
         print('no curr points')
     else:
         curr_container.corresponding_ind, curr_container.traffic_lights_3d_location, curr_container.valid = calc_3D_data(
@@ -71,6 +71,7 @@ def decompose(EM):
 
 def rot(R, pt):
     return np.dot(R, np.array([pt[0], pt[1], 1]))
+
 
 def rotate(pts, R):
     # rotate the points - pts using R

@@ -7,7 +7,6 @@ from PIL import Image
 from part3 import SFM
 
 
-
 class FrameContainer(object):
     def __init__(self, img_path):
         self.img = Image.open(img_path)
