@@ -140,8 +140,6 @@ def main(argv=None):
         args.dir = default_base
     flist = glob.glob(os.path.join(args.dir, '*_leftImg8bit.png'))
     for image in flist:
-        im = Image.open(image)
-        im.show()
         json_fn = image.replace('_leftImg8bit.png', '_gtFine_polygons.json')
         if not os.path.exists(json_fn):
             json_fn = None
