@@ -1,3 +1,4 @@
+
 try:
     import os
     import json
@@ -6,17 +7,15 @@ try:
     import math
     import numpy as np
     from scipy import signal as sg
-    from scipy.ndimage.filters import maximum_filter
+    from scipy.ndimage import maximum_filter
     from skimage.feature import peak_local_max
-
     from PIL import Image
-
     import matplotlib.pyplot as plt
 except ImportError:
     print("Need to fix the installation")
     raise
 
-"""
+"""j
 :return the coordinates of the the suspicious lights.
 """
 
@@ -24,7 +23,7 @@ except ImportError:
 def find_tfl_lights(c_image, some_threshold):
     """
     Detect candidates for TFL lights. Use c_image, kwargs and you imagination to implement
-    :param some_threshold: 
+    :param some_threshold:
     :param c_image: The image itself as np.uint8, shape of (H, W, 3)
     :param kwargs: Whatever config you want to pass in here
     :return: 4-tuple of x_red, y_red, x_green, y_green
@@ -71,26 +70,22 @@ def get_coordinates(c_image, x_light, y_light, image):
 
 
 def convolve_picture(c_image, kernel):
-    x_red, y_red = [], []
     im1 = Image.open(kernel).convert('L')
     kernel = np.stack((im1,) * 3, axis=-1)
     kernel = kernel[:, :, 0].astype(float)
+    # Normalize kernel and image
+    kernel = (kernel - np.average(kernel)) / np.abs(kernel).max()
+    c_image = (c_image - np.average(c_image)) / np.abs(c_image).max()
 
-    # Normalize kernel
-    kernel = kernel - np.average(kernel)
-    kernel = kernel / np.amax(kernel)
+    # Make kernel to be high-pass filter
+    kernel = kernel - np.sum(kernel) / np.size(kernel)
 
     # Make convolution on the image
     convolved = sg.convolve(c_image, kernel, 'same')
 
     # Get one point that is the maximum from each area
     coordinates = peak_local_max(convolved, min_distance=10, num_peaks=10)
-
-    # Take only coordinates that meet a certain condition
-    for i in range(len(coordinates)):
-        if convolved[coordinates[i][0]][coordinates[i][1]] > np.amax(convolved) - 30000 and coordinates[i][0] > 20:
-            x_red += [coordinates[i][1]]
-            y_red += [coordinates[i][0]]
+    x_red, y_red = coordinates[:, -1].tolist(), coordinates[:, 0].tolist()
     return x_red, y_red
 
 
@@ -113,6 +108,7 @@ def test_find_tfl_lights(image_path, json_path=None, fig_num=None):
     Run the attention code
     """
     image = np.array(Image.open(image_path))
+    plt.show()
     if json_path is None:
         objects = None
     else:
@@ -134,28 +130,27 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser("Test TFL attention mechanism")
     parser.add_argument('-i', '--image', type=str, help='Path to an image')
-    parser.add_argument("-j", "--json", type=str, help="Path to json Gfor comparison")
+    parser.add_argument("-j", "--json", type=str, help="Path to json GT for comparison")
     parser.add_argument('-d', '--dir', type=str, help='Directory to scan images in')
     args = parser.parse_args(argv)
+
     # Path of the pictures directory
     default_base = '../part4/data/images'
-
     if args.dir is None:
         args.dir = default_base
     flist = glob.glob(os.path.join(args.dir, '*_leftImg8bit.png'))
-
     for image in flist:
+        im = Image.open(image)
+        im.show()
         json_fn = image.replace('_leftImg8bit.png', '_gtFine_polygons.json')
-
         if not os.path.exists(json_fn):
             json_fn = None
         test_find_tfl_lights(image, json_fn)
-
     if len(flist):
         print("You should now see some images, with the ground truth marked on them. Close all to quit.")
     else:
         print("Bad configuration?? Didn't find any picture to show")
-    plt.show()
+    plt.show(block=True)
 
 
 if __name__ == '__main__':

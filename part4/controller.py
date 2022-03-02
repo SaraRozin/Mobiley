@@ -3,6 +3,7 @@ from view import Viewer
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+
 class Controller:
 
     def __init__(self, pls_path="play_list.pls"):

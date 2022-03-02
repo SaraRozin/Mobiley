@@ -14,14 +14,14 @@ class Model:
         self.data = data
         self.focal = data['flx']
         self.pp = data['principle_point']
-        self.loaded_model = load_model("../part2/model.h5")
+        self.loaded_model = load_model("../part2/model2.h5")
 
     def filter_points(self, image, suspect_x, suspect_y):
         tfl_points = []
         for i in range(len(suspect_x)):
             x, y = suspect_x[i], suspect_y[i]
             l_predictions = self.loaded_model.predict(self.crop_by_x_y(image, x, y).reshape(-1, 81, 81, 3))
-            if l_predictions[0][0] > 0.8:
+            if l_predictions[0][0] > 0.5:
                 tfl_points += [(x, y)]
         return tfl_points
 

@@ -1,13 +1,9 @@
-import json
-
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('MacOSX')
 import numpy as np
-from PIL import Image
-
 from part3 import SFM
 import pickle
+matplotlib.use('MacOSX')
 
 
 class Viewer:
@@ -20,7 +16,8 @@ class Viewer:
         self.pp = data['principle_point']
 
     def show_distances(self, prev_frame_id, curr_frame_id, prev_container, curr_container):
-        norm_prev_pts, norm_curr_pts, R, norm_foe, tZ = SFM.prepare_3D_data(prev_container, curr_container, self.focal, self.pp)
+        norm_prev_pts, norm_curr_pts, R, norm_foe, tZ = SFM.prepare_3D_data(prev_container, curr_container, self.focal,
+                                                                            self.pp)
         norm_rot_pts = SFM.rotate(norm_prev_pts, R)
         rot_pts = SFM.unnormalize(norm_rot_pts, self.focal, self.pp)
         foe = np.squeeze(SFM.unnormalize(np.array([norm_foe]), self.focal, self.pp))
@@ -41,34 +38,3 @@ class Viewer:
         curr_sec.plot(foe[0], foe[1], 'r+')
         curr_sec.plot(rot_pts[:, 0], rot_pts[:, 1], 'g+')
         plt.show()
-
-
-
-    # def show_part1(self):
-    #     image = np.array(Image.open(image_path))
-    #     if json_path is None:
-    #         objects = None
-    #     else:
-    #         gt_data = json.load(open(json_path))
-    #         what = ['traffic light']
-    #         objects = [o for o in gt_data['objects'] if o['label'] in what]
-    #     self.show_image_and_gt(image, objects, fig_num)
-    #
-    #     red_x, red_y, green_x, green_y = find_tfl_lights(image, some_threshold=42)
-    #     plt.plot(red_x, red_y, 'ro', markersize=4)
-    #     plt.plot(green_x, green_y, 'go', markersize=4)
-
-
-
-    ### GIVEN CODE TO TEST YOUR IMPLENTATION AND PLOT THE PICTURES
-    def show_image_and_gt(image, objs, fig_num=None):
-        plt.figure(fig_num).clf()
-        plt.imshow(image)
-        labels = set()
-        if objs is not None:
-            for o in objs:
-                poly = np.array(o['polygon'])[list(np.arange(len(o['polygon']))) + [0]]
-                plt.plot(poly[:, 0], poly[:, 1], 'r', label=o['label'])
-                labels.add(o['label'])
-            if len(labels) > 1:
-                plt.legend()
