@@ -31,8 +31,8 @@ def find_tfl_lights(c_image, some_threshold):
     """
     c_image = c_image.astype(float)
 
-    x_red, y_red = find_lights3(c_image, 0)
-    x_green, y_green = find_lights3(c_image, 1)
+    x_red, y_red = find_lights(c_image, 0)
+    x_green, y_green = find_lights(c_image, 1)
 
     # remove duplicates coordinates, between the red and green
     for i in range(len(x_red)):
@@ -52,68 +52,8 @@ def find_tfl_lights(c_image, some_threshold):
     return x_red, y_red, x_green, y_green
 
 
-# Non-use function
-# High-pass filter
-def find_lights(c_image, color_num):
-    c_image = c_image[:, :, color_num]
-    kernel = [[-1 / 2025 for _ in range(45)] for _ in range(45)]
-    kernel[22][22] = 2024 / 2025
-
-    x_red, y_red = [], []
-    convolved = sg.convolve(c_image, kernel, 'same')
-    coordinates = peak_local_max(convolved, min_distance=10, num_peaks=10)
-    for i in range(len(coordinates)):
-        if convolved[coordinates[i][0]][coordinates[i][1]] > 150:
-            x_red += [coordinates[i][1]]
-            y_red += [coordinates[i][0]]
-    return x_red, y_red
-
-
-# Non-use function
-# Make subtraction between two high-pass filters, one big and the second small.
-def find_lights2(c_image, color_num):
-    c_image = c_image[:, :, color_num]
-    kernel = [[-1 / 2025 for _ in range(45)] for _ in range(45)]
-    kernel[22][22] = 2024 / 2025
-    convolved = sg.convolve(c_image, kernel, 'same')
-    coordinates = peak_local_max(convolved, min_distance=10)
-    big_light = []
-    for i in range(len(coordinates)):
-        if convolved[coordinates[i][0]][coordinates[i][1]] > 150:
-            big_light.append((coordinates[i][1], coordinates[i][0]))
-
-    kernel = [[-1 / 625 for _ in range(25)] for _ in range(25)]
-    kernel[12][12] = 624 / 625
-    convolved = sg.convolve(c_image, kernel, 'same')
-    coordinates = peak_local_max(convolved, min_distance=10)
-    small_light = []
-    for i in range(len(coordinates)):
-        if convolved[coordinates[i][0]][coordinates[i][1]] > 150:
-            small_light.append((coordinates[i][1], coordinates[i][0]))
-
-    for coordinate in small_light:
-        min_distance = 2000
-        index = 0
-        for j in range(len(big_light)):
-            if big_light[j] is not None:
-                distance = math.sqrt(
-                    ((coordinate[0] - big_light[j][0]) ** 2) + ((coordinate[1] - big_light[j][1]) ** 2))
-                if distance <= min_distance:
-                    min_distance = distance
-                    index = j
-        if min_distance <= 10:
-            big_light[index] = None
-
-    x_red, y_red = [], []
-    for pair in big_light:
-        if pair is not None:
-            x_red.append(pair[0])
-            y_red.append(pair[1])
-    return x_red, y_red
-
-
 # Find the lights using 2 drawn pictures in two sizes of traffic_lights as kernels.
-def find_lights3(c_image, color_num):
+def find_lights(c_image, color_num):
     c_image = c_image[:, :, color_num]
     x_light, y_light = [], []
     x_light, y_light = get_coordinates(c_image, x_light, y_light, '../part1/traffic_lights.png')
@@ -194,11 +134,11 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser("Test TFL attention mechanism")
     parser.add_argument('-i', '--image', type=str, help='Path to an image')
-    parser.add_argument("-j", "--json", type=str, help="Path to json GT for comparison")
+    parser.add_argument("-j", "--json", type=str, help="Path to json Gfor comparison")
     parser.add_argument('-d', '--dir', type=str, help='Directory to scan images in')
     args = parser.parse_args(argv)
     # Path of the pictures directory
-    default_base = './Data/test'
+    default_base = '../part4/data/images'
 
     if args.dir is None:
         args.dir = default_base
@@ -215,7 +155,7 @@ def main(argv=None):
         print("You should now see some images, with the ground truth marked on them. Close all to quit.")
     else:
         print("Bad configuration?? Didn't find any picture to show")
-    plt.show(block=True)
+    plt.show()
 
 
 if __name__ == '__main__':
