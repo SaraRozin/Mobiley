@@ -21,7 +21,8 @@ class Model:
         for i in range(len(suspect_x)):
             x, y = suspect_x[i], suspect_y[i]
             l_predictions = self.loaded_model.predict(self.crop_by_x_y(image, x, y).reshape(-1, 81, 81, 3))
-            if l_predictions[0][0] > 0.5:
+            traffic_light_probability = l_predictions[0][1]
+            if traffic_light_probability > 0.8:
                 tfl_points += [(x, y)]
         return tfl_points
 
