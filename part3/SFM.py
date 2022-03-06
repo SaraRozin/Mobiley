@@ -1,6 +1,17 @@
 import math
 
 import numpy as np
+from PIL.Image import Image
+
+
+class FrameContainer(object):
+    def __init__(self, img_path):
+        self.img = Image.open(img_path)
+        self.traffic_light = []
+        self.traffic_lights_3d_location = []
+        self.EM = []
+        self.corresponding_ind = []
+        self.valid = []
 
 
 def calc_TFL_dist(prev_container, curr_container, focal, pp):
