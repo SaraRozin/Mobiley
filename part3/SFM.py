@@ -1,7 +1,6 @@
 import math
-
 import numpy as np
-from PIL.Image import Image
+from PIL import Image
 
 
 class FrameContainer(object):

@@ -70,9 +70,10 @@ def get_coordinates(c_image, x_light, y_light, image):
 
 
 def convolve_picture(c_image, kernel):
-    im1 = Image.open(kernel).convert('L')
-    kernel = np.stack((im1,) * 3, axis=-1)
+    im = Image.open(kernel).convert('L')
+    kernel = np.stack((im,) * 3, axis=-1)
     kernel = kernel[:, :, 0].astype(float)
+    
     # Normalize kernel and image
     kernel = (kernel - np.average(kernel)) / np.abs(kernel).max()
     c_image = (c_image - np.average(c_image)) / np.abs(c_image).max()
