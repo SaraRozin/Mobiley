@@ -16,7 +16,8 @@ class Controller:
         for i in range(len(frames))[2::2]:
             tfl_man = Model()
             v = Viewer()
-            containers = tfl_man.get_TFL_distances(index_frame, frames[i].split('\n')[0], frames[i + 1].split('\n')[0])
+            prev_image, cur_image = frames[i].split('\n')[0], frames[i + 1].split('\n')[0]
+            containers = tfl_man.get_TFL_distances(index_frame, prev_image, cur_image)
             distances += [containers[1].traffic_lights_3d_location[:, 2]]
             v.show_distances(index_frame, index_frame + 1, containers[0], containers[1])
             index_frame += 2
